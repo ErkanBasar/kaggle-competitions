@@ -34,23 +34,32 @@ for j,img in enumerate(glob.glob("../../statefarm/test/*.jpg")):
     imagename = re.findall("../../statefarm/test/(.*).jpg",img)[0]
     image_names.append(imagename)
 
+    print(imagename)
+
     image = cv2.imread(img,0)
     kp, des = surf.detectAndCompute(image,None)
-    
-    clus_array = feature_classifier.predict(des)
 
-    cntr =  Counter(clus_array)
-    cluster_vector = [cntr[i] for i in range(0,number_of_clusters)]
+    if(des==None):
+         interDF = pd.DataFrame(data=np.array([[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]]), index=None, columns=classnames)
     
-    label_probs = theclassifier.predict_proba(cluster_vector)
+    else:
+         clus_array = feature_classifier.predict(des)
+
+         cntr =  Counter(clus_array)
+         cluster_vector = [cntr[i] for i in range(0,number_of_clusters)]
+
+         cluster_vector = np.array(cluster_vector).reshape(1,(len(cluster_vector)))
     
-    interDF = pd.DataFrame(data=label_probs, index=None, columns=classnames)
+         label_probs = theclassifier.predict_proba(cluster_vector)
+    
+         interDF = pd.DataFrame(data=label_probs, index=None, columns=classnames)
     
     if(j==0):
         theresult = interDF
     else:
         theresult = pd.concat([theresult, interDF])
-    
+
+    theresult.to_csv('inter_submission.csv', index=None, header=True)    
 
 theresult.insert(0, 'img', image_names)
 
