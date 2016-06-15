@@ -59,7 +59,7 @@ for j,img in enumerate(glob.glob("../../statefarm/test/*.jpg")):
     else:
         theresult = pd.concat([theresult, interDF])
 
-    theresult.to_csv('inter_submission.csv', index=None, header=True)    
+#    theresult.to_csv('inter_submission.csv', index=None, header=True)    
 
 theresult.insert(0, 'img', image_names)
 
